@@ -1,0 +1,12 @@
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+z_*
+secrets.py
+_data/*
+_data
+_cache/*
+__pycache__
+__pycache__/*
+.mypy_cache*
+.vscode*
+.DS_store
