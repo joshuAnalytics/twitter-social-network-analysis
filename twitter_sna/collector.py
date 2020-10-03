@@ -1,16 +1,16 @@
-import tweepy as tw
-import secrets as s
-import joblib as jlb
-import pandas as pd
-from pathlib import Path
 import os
 import csv
 
+import joblib as jlb
+import pandas as pd
+from pathlib import Path
+import tweepy as tw
+
+import secrets as s
+
 
 class DataCollector:
-    def __init__(
-        self, tweepy_api, cache_path="_cache/", cache_users="df_users.jlb", cache_followers="df_followers.csv"
-    ):
+    def __init__(self, tweepy_api, cache_path="_cache/", cache_users="df_users.jlb"):
         self.api = tweepy_api
         self.user_fields = [
             "id",
@@ -23,8 +23,8 @@ class DataCollector:
             "statuses_count",
         ]
         self.follower_fields = ["id_str", "name", "screen_name", "followers_count", "friends_count", "created_at"]
-
         self.cache_users_path = Path(cache_path, cache_users)
+        self.max_followers = None
 
         if os.path.exists(self.cache_users_path):
             self.df_users = jlb.load(self.cache_users_path)
@@ -40,6 +40,8 @@ class DataCollector:
             handle = self._fix_handle(handle)
             self.add_user(handle)
         print(f"\ntotal users {self.df_users.shape[0]}")
+        print(self.df_users[["screen_name", "followers_count"]])
+        self.max_followers = self.df_users["followers_count"].max()
 
     def add_user(self, handle):
         """
@@ -143,11 +145,10 @@ class DataCollector:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
 
-            for user_object in tw.Cursor(self.api.followers, handle).items(10):
+            for user_object in tw.Cursor(self.api.followers, handle).items(self.max_followers):
                 row = self._parse_followers_data(handle, user_object, self.follower_fields)
                 row["follows"] = handle
                 writer.writerow(row)
-
                 print(self.rate_limit_remaining(), end="\r")
 
         csvfile.close()
