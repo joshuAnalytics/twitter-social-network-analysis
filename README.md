@@ -1,6 +1,6 @@
 # twitter social network analysis
 
-## Setup
+## api keys
 
 To collect data, you will need a twitter api key & access token. These should be placed in a file called 'secrets.py`:
 
@@ -10,6 +10,14 @@ access_token_secret = "xxx"
 api_key = "xxx"
 api_secret_key = "xxx"
 ```
+
+## setup
+
+```bash
+conda create -n twitter-sna python=3.7
+conda activate twitter-sna
+pip install -e .
+
 
 ## Modules
 

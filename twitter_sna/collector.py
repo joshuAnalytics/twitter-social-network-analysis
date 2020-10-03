@@ -5,7 +5,7 @@ import pandas as pd
 import os
 
 
-class TwitterData:
+class DataCollector:
     def __init__(self, tweepy_api, cache_path="_cache", cache_file="df_users.jlb"):
         self.api = tweepy_api
         self.user_fields = [
@@ -18,12 +18,15 @@ class TwitterData:
             "favourites_count",
             "statuses_count",
         ]
+        self.follower_fields = ["id_str", "name", "screen_name", "followers_count", "friends_count", "created_at"]
         self.cache_path = cache_path
         self.cache_file = cache_file
         self.cache_file_path = os.path.join(cache_path, cache_file)
-        if not os.path.exists(self.cache_file_path):
+        if os.path.exists(self.cache_file_path):
+            self.df_users = joblib.load(self.cache_file_path)
+        else:
             self.create_cache_file()
-        self.df_users = joblib.load(self.cache_file_path)
+            self.df_users = joblib.load(self.cache_file_path)
 
     def add_users(self, handle_list):
         """
@@ -32,7 +35,7 @@ class TwitterData:
         handle_list = [handle.lower() for handle in handle_list]
         for handle in handle_list:
             self.add_user(handle)
-        return self.df_users
+        print(f"\ntotal users {self.df_users.shape[0]}")
 
     def add_user(self, handle):
         """
@@ -81,3 +84,26 @@ class TwitterData:
         df_out = self.df_users.copy()
         df_out.set_index("id")
         df_out.to_csv("user_data.csv")
+
+    def _fix_handle(self, handle):
+        return = handle.strip("@").lower()
+
+    def get_followers(self, handle):
+        """
+        retrieves all followers for a user, with rate limit handling
+        """
+        handle = handle.strip("@")
+        screen_name = handle.lower()
+
+        followers_df = pd.DataFrame()
+        # check the user is cached, if not retrive user stats
+        if not self.is_handle_cached(screen_name):
+            self.add_user(screen_name)
+
+        print(self.df_users[self.df_users["screen_name"] == screen_name)
+
+        
+        # for response in limit_handled(tw.Cursor(api.followers, handle).items()):
+        # print(response.screen_name)
+        # followers_df = followers_df.append(parse_followers_data(handle, response, followers_fields), ignore_index=True)
+        # followers_df.to_csv("_data/df_followers.csv", index=False)
