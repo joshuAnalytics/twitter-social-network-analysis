@@ -32,8 +32,8 @@ class DataCollector:
         """
         pass a list of user handles to add to dataset
         """
-        handle_list = [handle.lower() for handle in handle_list]
         for handle in handle_list:
+            handle = self._fix_handle(handle)
             self.add_user(handle)
         print(f"\ntotal users {self.df_users.shape[0]}")
 
@@ -41,7 +41,7 @@ class DataCollector:
         """
         add user data to the users dataset
         """
-        handle = handle.lower()
+        handle = self._fix_handle(handle)
         if not self.is_handle_cached(handle):
             response = self.api.get_user(handle)
             user_row = self.parse_user_data(response, self.user_fields)
@@ -55,7 +55,7 @@ class DataCollector:
         """
         check if user is already cached
         """
-        handle = handle.strip("@")
+        handle = self._fix_handle(handle)
         if handle in self.df_users["screen_name"].values:
             return True
         return False
@@ -86,23 +86,20 @@ class DataCollector:
         df_out.to_csv("user_data.csv")
 
     def _fix_handle(self, handle):
-        return = handle.strip("@").lower()
+        return handle.strip("@").lower()
 
     def get_followers(self, handle):
         """
         retrieves all followers for a user, with rate limit handling
         """
-        handle = handle.strip("@")
-        screen_name = handle.lower()
-
+        handle = self._fix_handle(handle)
         followers_df = pd.DataFrame()
         # check the user is cached, if not retrive user stats
         if not self.is_handle_cached(screen_name):
             self.add_user(screen_name)
 
-        print(self.df_users[self.df_users["screen_name"] == screen_name)
+        print(self.df_users[self.df_users["screen_name"] == screen_name])
 
-        
         # for response in limit_handled(tw.Cursor(api.followers, handle).items()):
         # print(response.screen_name)
         # followers_df = followers_df.append(parse_followers_data(handle, response, followers_fields), ignore_index=True)

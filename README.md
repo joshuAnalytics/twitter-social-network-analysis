@@ -17,11 +17,12 @@ api_secret_key = "xxx"
 conda create -n twitter-sna python=3.7
 conda activate twitter-sna
 pip install -e .
+```
 
+## twitter_sna.collector
 
-## Modules
-
-`get_user_data.py` collects data on [users](https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/user-object) and stores in a dataframe. 
+* collects simple metadata on [users](https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/user-object) 
+* collects data on all a user's followers
 
 ## TODO
 
