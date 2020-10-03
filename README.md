@@ -1,5 +1,7 @@
 # twitter social network analysis
 
+A tool for generating social network analysis with twitter data. Given a list of twitter users, retrieve all the followers for those users and analyse the social network. 
+
 ## api keys
 
 To collect data, you will need a twitter api key & access token. These should be placed in a file called 'secrets.py`:
@@ -26,6 +28,5 @@ pip install -e .
 
 ## TODO
 
-* get followers for each user and store in dataframes
 * build network relationship dataframes using followers/followed
 * load into social network analysis tool
