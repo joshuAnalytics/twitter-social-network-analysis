@@ -4,10 +4,13 @@ import joblib as jlb
 import pandas as pd
 from pathlib import Path
 import os
+import csv
 
 
 class DataCollector:
-    def __init__(self, tweepy_api, cache_path="_cache/", cache_file="df_users.jlb"):
+    def __init__(
+        self, tweepy_api, cache_path="_cache/", cache_users="df_users.jlb", cache_followers="df_followers.csv"
+    ):
         self.api = tweepy_api
         self.user_fields = [
             "id",
@@ -20,14 +23,14 @@ class DataCollector:
             "statuses_count",
         ]
         self.follower_fields = ["id_str", "name", "screen_name", "followers_count", "friends_count", "created_at"]
-        self.cache_path = cache_path
-        self.cache_file = cache_file
-        self.cache_file_path = Path(cache_path, cache_file)
-        if os.path.exists(self.cache_file_path):
-            self.df_users = jlb.load(self.cache_file_path)
+
+        self.cache_users_path = Path(cache_path, cache_users)
+
+        if os.path.exists(self.cache_users_path):
+            self.df_users = jlb.load(self.cache_users_path)
         else:
             self.create_cache_file()
-            self.df_users = jlb.load(self.cache_file_path)
+            self.df_users = jlb.load(self.cache_users_path)
 
     def add_users(self, handle_list):
         """
@@ -47,7 +50,7 @@ class DataCollector:
             response = self.api.get_user(handle)
             user_row = self.parse_user_data(response, self.user_fields)
             self.df_users = self.df_users.append(user_row, sort=False)
-            jlb.dump(self.df_users, self.cache_file_path)
+            jlb.dump(self.df_users, self.cache_users_path)
             print(f"{handle} added")
         else:
             print(f"{handle} already cached")
@@ -77,7 +80,7 @@ class DataCollector:
         """
         create an empty cache file
         """
-        jlb.dump(pd.DataFrame(columns=self.user_fields), self.cache_file_path)
+        jlb.dump(pd.DataFrame(columns=self.user_fields), self.cache_users_path)
 
     def to_csv(self):
         """
@@ -109,7 +112,7 @@ class DataCollector:
             follower_dict[field] = user_dict[field]
 
         follower_dict["screen_name"] = follower_dict["screen_name"].lower()
-        follower_dict["follows"] = handle
+        # follower_dict["follows"] = handle
         return follower_dict
 
     def rate_limit_remaining(self):
@@ -124,23 +127,27 @@ class DataCollector:
         """
         print(f"--- retrieving followers for {handle} ---")
         handle = self._fix_handle(handle)
-        followers_df = pd.DataFrame()
 
         # check the user is cached, if not retrive user stats
         if not self.is_handle_cached(handle):
             self.add_user(handle)
 
-        followers_df_path = "_data/df_followers.csv"
-        followers_df = pd.DataFrame(columns=self.follower_fields)
-        followers_df.to_csv(followers_df_path, index=False)
-
         print("remaining requests before rate limit:")
         # request the followers using tweepy
-        for response in tw.Cursor(self.api.followers, handle).items(100):
-            followers_df = pd.read_csv(followers_df_path)
-            followers_df = followers_df.append(
-                self._parse_followers_data(handle, response, self.follower_fields), ignore_index=True
-            )
-            followers_df["follows"] = handle
-            followers_df.to_csv(followers_df_path, index=False)
-            print(self.rate_limit_remaining(), end="\r")
+
+        followers_df_path = f"_data/df_followers_{handle}.csv"
+        fieldnames = self.follower_fields.copy()
+        fieldnames.append("follows")
+
+        with open(followers_df_path, "w") as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+
+            for user_object in tw.Cursor(self.api.followers, handle).items(10):
+                row = self._parse_followers_data(handle, user_object, self.follower_fields)
+                row["follows"] = handle
+                writer.writerow(row)
+
+                print(self.rate_limit_remaining(), end="\r")
+
+        csvfile.close()
