@@ -122,6 +122,7 @@ class DataCollector:
         """
         retrieves all followers for a user, with rate limit handling
         """
+        print(f"--- retrieving followers for {handle} ---")
         handle = self._fix_handle(handle)
         followers_df = pd.DataFrame()
 
@@ -135,7 +136,7 @@ class DataCollector:
 
         print("remaining requests before rate limit:")
         # request the followers using tweepy
-        for response in tw.Cursor(self.api.followers, handle).items(2000):
+        for response in tw.Cursor(self.api.followers, handle).items(100):
             followers_df = pd.read_csv(followers_df_path)
             followers_df = followers_df.append(
                 self._parse_followers_data(handle, response, self.follower_fields), ignore_index=True
