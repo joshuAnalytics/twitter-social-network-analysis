@@ -2,6 +2,13 @@
 
 A tool for generating social network analysis with twitter data. Given a list of twitter users, retrieve all the followers for those users and analyse the social network. 
 
+# main components: 
+
+* data collector: collects data on all a user's followers
+* graph: *WIP*
+
+# setup
+
 ## api keys
 
 To collect data, you will need a twitter api key & access token. These should be placed in a file called 'secrets.py`:
@@ -13,7 +20,7 @@ api_key = "xxx"
 api_secret_key = "xxx"
 ```
 
-## setup
+## python env setup
 
 ```bash
 conda create -n twitter-sna python=3.7
@@ -21,12 +28,17 @@ conda activate twitter-sna
 pip install -e .
 ```
 
-## twitter_sna.collector
+## neo4j setup
 
-* collects simple metadata on [users](https://developer.twitter.com/en/docs/tweets/data-dictionary/overview/user-object) 
-* collects data on all a user's followers
+* [download JDK](https://neo4j.com/docs/operations-manual/current/installation/requirements/) and install
 
-## TODO
+* [download neo4j server community edition](https://neo4j.com/download-center/#community)
 
-* build network relationship dataframes using followers/followed
-* load into social network analysis tool
+start the server:
+
+```bash
+bash neo4j-community-4.1.3/bin/neo4j start
+```
+
+
+

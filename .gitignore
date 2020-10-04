@@ -5,9 +5,11 @@ z_*
 secrets.py
 _data/*
 _data
+_sample
 _cache/*
 __pycache__
 __pycache__/*
 .mypy_cache*
 .vscode*
 .DS_store
+neo4j*
