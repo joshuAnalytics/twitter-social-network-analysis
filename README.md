@@ -32,9 +32,13 @@ pip install -e .
 <br/><br/>
 ## neo4j setup<br/><br/>
 
+**JDK**
+
 [download JDK](https://neo4j.com/docs/operations-manual/current/installation/requirements/) and install
 
-* [download neo4j server community edition](https://neo4j.com/download-center/#community)
+**neo4j server**
+
+[download neo4j server community edition](https://neo4j.com/download-center/#community)
 
 **disable auth**
 
