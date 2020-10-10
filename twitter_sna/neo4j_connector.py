@@ -45,7 +45,11 @@ class Connection:
 
     def create_node(self, nodetype, unique_key_fieldname, unique_key):
         """
-        create User with <screen_name> if it doesn't already exist
+        create a node if it doesn't already exist
+        args:
+            nodetype: type of node in neo4j
+            unique_key_fieldname: the property on the node to uniquely identify it
+            unique_key: the unique key for the node instance being created
         """
         self.query(f"MERGE (a:{nodetype} {{ {unique_key_fieldname}: '{unique_key}' }})")
 
