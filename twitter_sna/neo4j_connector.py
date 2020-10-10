@@ -17,6 +17,7 @@ class Connection:
         """
         self.driver = GraphDatabase.driver(uri, auth=(user, password))
         self.verbose = verbose
+        self.last_b = None
 
     def close(self):
         """close the db connection"""
@@ -57,8 +58,15 @@ class Connection:
         """
         create directed relationship of <rtype> between a -> b
         """
+        # create the a node
         self.create_node("User", "screen_name", a)
-        self.create_node("User", "screen_name", b)
+
+        # create the b node if it has changed
+        if self.last_b != b:
+            self.create_node("User", "screen_name", b)
+        self.last_b = b
+
+        # create the a->b relationship
         self.query(
             f"MATCH (a:User {{ screen_name: '{a}' }}),(b:User {{ screen_name: '{b}' }}) \nMERGE (a)-[r:{rtype}]->(b)"
         )
