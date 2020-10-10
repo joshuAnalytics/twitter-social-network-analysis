@@ -2,11 +2,14 @@
 
 A tool for generating social network analysis with twitter data. Given a list of twitter users, retrieve all the followers for those users and analyse the social network. 
 
-<br/><br/>
-# main components: 
+* collector: collects data on all a user's followers and stores them as csv files
+* neo4j_connector: builds a social network graph using the relationships from the collected twitter users
 
-* data collector: collects data on all a user's followers
-* graph: *WIP*
+<br/><br/>
+
+# instructions
+
+see examples in scripts folder
 
 <br/><br/>
 # setup

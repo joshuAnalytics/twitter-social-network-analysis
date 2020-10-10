@@ -12,4 +12,5 @@ __pycache__/*
 .mypy_cache*
 .vscode*
 .DS_store
-neo4j*
+neo4j_downloads
+neo4j-community-*
