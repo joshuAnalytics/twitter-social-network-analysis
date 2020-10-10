@@ -15,9 +15,11 @@ conn = Connection(uri="neo4j://localhost:7687", user="", password="")
 conn.delete_all()
 
 # load csvs
-df = pd.concat([pd.read_csv(f, usecols=[A_COL, B_COL], nrows=10) for f in glob.glob(CSV_PATH)], ignore_index=True)
+df = pd.concat([pd.read_csv(f, usecols=[A_COL, B_COL]) for f in glob.glob(CSV_PATH)], ignore_index=True)
 
 # run cypher queries to load the data
+c = 0
 for row in df.itertuples(index=False):
     conn.link_users(row[0], row[1], rtype="FOLLOWS")
-    print(f"linked {row[0]} -> {row[1]}")
+    c += 1
+    print(f"Added {c} relationships", end="\r")

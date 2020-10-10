@@ -62,6 +62,8 @@ class Connection:
         self.query(
             f"MATCH (a:User {{ screen_name: '{a}' }}),(b:User {{ screen_name: '{b}' }}) \nMERGE (a)-[r:{rtype}]->(b)"
         )
+        if self.verbose:
+            print(f"linked {a} -> {b}")
 
     def delete_all(self):
         """
